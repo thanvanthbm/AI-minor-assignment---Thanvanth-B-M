@@ -1,0 +1,13 @@
+parent(X, Y) :- father(X, Y).
+parent(X, Y) :- mother(X, Y).
+
+father(X, Y) :- parent(X, Y), male(X).
+
+that_man_father(Speaker, Man) :-
+    father(Speaker, Man),
+    not(has_sibling(Speaker)).
+
+has_sibling(Person) :-
+    parent(Parent, Person),
+    parent(Parent, Sibling),
+    Person \= Sibling.
