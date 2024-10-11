@@ -1,0 +1,82 @@
+weight(man, 80).
+weight(woman, 80).
+weight(child1, 30).
+weight(child2, 30).
+
+initial_state(state(left, left, left, left, left)).
+goal_state(state(right, right, right, right, right)).
+
+move(state(Man, Woman, Child1, Child2, left), state(NewMan, Woman, Child1, Child2, right), man) :-
+    Man = left,
+    weight(man, ManWeight),
+    ManWeight =< 100,
+    NewMan = right.
+
+move(state(Man, Woman, Child1, Child2, left), state(Man, NewWoman, Child1, Child2, right), woman) :-
+    Woman = left,
+    weight(woman, WomanWeight),
+    WomanWeight =< 100,
+    NewWoman = right.
+
+move(state(Man, Woman, Child1, Child2, left), state(Man, Woman, NewChild1, Child2, right), child1) :-
+    Child1 = left,
+    weight(child1, Child1Weight),
+    Child1Weight =< 100,
+    NewChild1 = right.
+
+move(state(Man, Woman, Child1, Child2, left), state(Man, Woman, Child1, NewChild2, right), child2) :-
+    Child2 = left,
+    weight(child2, Child2Weight),
+    Child2Weight =< 100,
+    NewChild2 = right.
+
+move(state(Man, Woman, Child1, Child2, left), state(Man, Woman, NewChild1, NewChild2, right), children) :-
+    Child1 = left, Child2 = left,
+    weight(child1, Child1Weight),
+    weight(child2, Child2Weight),
+    TotalWeight is Child1Weight + Child2Weight,
+    TotalWeight =< 100,
+    NewChild1 = right, NewChild2 = right.
+
+move(state(Man, Woman, Child1, Child2, right), state(NewMan, Woman, Child1, Child2, left), man) :-
+    Man = right,
+    weight(man, ManWeight),
+    ManWeight =< 100,
+    NewMan = left.
+
+move(state(Man, Woman, Child1, Child2, right), state(Man, NewWoman, Child1, Child2, left), woman) :-
+    Woman = right,
+    weight(woman, WomanWeight),
+    WomanWeight =< 100,
+    NewWoman = left.
+
+move(state(Man, Woman, Child1, Child2, right), state(Man, Woman, NewChild1, Child2, left), child1) :-
+    Child1 = right,
+    weight(child1, Child1Weight),
+    Child1Weight =< 100,
+    NewChild1 = left.
+
+move(state(Man, Woman, Child1, Child2, right), state(Man, Woman, Child1, NewChild2, left), child2) :-
+    Child2 = right,
+    weight(child2, Child2Weight),
+    Child2Weight =< 100,
+    NewChild2 = left.
+
+move(state(Man, Woman, Child1, Child2, right), state(Man, Woman, NewChild1, NewChild2, left), children) :-
+    Child1 = right, Child2 = right,
+    weight(child1, Child1Weight),
+    weight(child2, Child2Weight),
+    TotalWeight is Child1Weight + Child2Weight,
+    TotalWeight =< 100,
+    NewChild1 = left, NewChild2 = left.
+
+solve_river_crossing(Solution) :-
+    initial_state(StartState),
+    goal_state(GoalState),
+    river_crossing(StartState, GoalState, [], Solution).
+
+river_crossing(State, State, Path, Path).
+river_crossing(CurrentState, GoalState, Path, Solution) :-
+    move(CurrentState, NextState, Who),
+    \+ member(NextState, Path),
+    river_crossing(NextState, GoalState, [move(Who, CurrentState, NextState) | Path], Solution).
